@@ -13,3 +13,8 @@ terraform {
 provider "aws" {
     region = var.aws_region
 }
+
+module "cognito" {
+  source          = "./modules/cognito"
+  user_pool_name  = "price-comparator-user-pool"
+}
