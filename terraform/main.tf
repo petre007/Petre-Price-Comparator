@@ -27,3 +27,19 @@ module "ecr" {
     Project     = "price-comparator"
   }
 }
+
+module "ecs" {
+  source = "./modules/ecs"
+
+  clusters = [
+    {
+      name  = "dpc-auth"
+      image = null
+    },
+  ]
+
+  tags = {
+    Environment = "dev"
+    Project     = "price-comparator"
+  }
+}
