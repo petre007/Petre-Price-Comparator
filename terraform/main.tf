@@ -52,3 +52,16 @@ module "rds" {
   db_engine_version    = "17.2"
   allocated_storage    = 20
 }
+
+module "s3" {
+  source = "./modules/s3"
+
+  bucket_name        = "petre-price-comparator-12345"
+  versioning_enabled = true
+  force_destroy      = false
+  enable_sse         = true
+  tags = {
+    Environment = "dev"
+    Owner       = "your-name"
+  }
+}
