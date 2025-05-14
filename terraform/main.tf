@@ -44,27 +44,6 @@ module "ecs" {
   }
 }
 
-# # 1. Generate random password
-# resource "random_password" "rds_password" {
-#   length  = 16
-#   special = true
-# }
-
-# # 2. Create the secret
-# resource "aws_secretsmanager_secret" "rds" {
-#   name = "rds-credentials"
-# }
-
-# # 3. Store secret value (as JSON)
-# resource "aws_secretsmanager_secret_version" "rds" {
-#   secret_id     = aws_secretsmanager_secret.rds.id
-#   secret_string = jsonencode({
-#     username = "admin"
-#     password = random_password.rds_password.result
-#     dbname   = "price-catalog-db"
-#   })
-# }
-
 module "rds" {
   source               = "./modules/rds"
   db_secret_arn        = "arn:aws:secretsmanager:eu-central-1:160885268864:secret:rds-credentials-abbuDm"
