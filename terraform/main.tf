@@ -65,3 +65,14 @@ module "s3" {
     Owner       = "your-name"
   }
 }
+
+module "sns_sqs_fifo" {
+  source = "./modules/sns-sqs-fifo"
+
+  topics = ["register_topic"]
+  queues = ["register_sqs"]
+
+  subscriptions = {
+    register_topic = ["register_sqs"]
+  }
+}
