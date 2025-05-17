@@ -14,7 +14,7 @@ public class SqsRegisterListener {
 
     private final SqsService sqsService;
 
-    @SqsListener(value = "register_sqs")
+    @SqsListener(value = "${sqs.name}")
     public void listen(String message) {
         try {
             sqsService.processMessage(message);
