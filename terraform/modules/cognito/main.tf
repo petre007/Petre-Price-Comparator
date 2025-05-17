@@ -54,6 +54,10 @@ resource "aws_cognito_user_pool" "this" {
     attribute_data_type = "String"
     mutable  = true
   }
+
+  lambda_config {
+    post_confirmation = var.post_confirmation_lambda_arn
+  }
 }
 
 resource "aws_cognito_user_pool_client" "this" {
@@ -75,6 +79,8 @@ resource "aws_cognito_user_pool_client" "this" {
 
   supported_identity_providers = ["COGNITO"]
   generate_secret = false
+
+  
 }
 
 resource "aws_cognito_user_pool_domain" "this" {

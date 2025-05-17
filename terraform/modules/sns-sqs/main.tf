@@ -1,15 +1,14 @@
 resource "aws_sns_topic" "topics" {
   for_each   = toset(var.topics)
-  name       = "${each.key}.fifo"
-  fifo_topic = true
+  name       = "${each.key}"
+  fifo_topic = false
 }
 
 resource "aws_sqs_queue" "queues" {
   for_each = toset(var.queues)
 
-  name                         = "${each.key}.fifo"
-  fifo_queue                   = true
-  content_based_deduplication = true
+  name                         = "${each.key}"
+  fifo_queue                   = false
 }
 
 # Flattened subscription map
@@ -66,3 +65,4 @@ resource "aws_sqs_queue_policy" "allow_sns" {
     ]
   })
 }
+

@@ -17,6 +17,7 @@ provider "aws" {
 module "cognito" {
   source          = "./modules/cognito"
   user_pool_name  = "price-comparator-user-pool"
+  post_confirmation_lambda_arn = module.register_lambda.lambda_arn
 }
 
 module "ecr" {
@@ -67,7 +68,7 @@ module "s3" {
 }
 
 module "sns_sqs_fifo" {
-  source = "./modules/sns-sqs-fifo"
+  source = "./modules/sns-sqs"
 
   topics = ["register_topic"]
   queues = ["register_sqs"]
@@ -76,3 +77,11 @@ module "sns_sqs_fifo" {
     register_topic = ["register_sqs"]
   }
 }
+
+module "register_lambda" {
+  source        = "./modules/register-lambda"
+  jar_path      = var.jar_path
+  sns_topic_arn = module.sns_sqs_fifo.topic_arns["register_topic"]
+  user_pool_arn   = module.cognito.user_pool_arn
+}
+

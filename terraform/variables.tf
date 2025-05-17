@@ -3,3 +3,9 @@ variable "aws_region" {
     type        = string
     default     = "eu-central-1"
 }
+
+variable "jar_path" {
+  type        = string
+  description = "Path to the Lambda JAR file"
+  default     = "../java/serverless/RegisterLambda/target/RegisterLambda-1.0-SNAPSHOT.jar"
+}

@@ -26,3 +26,8 @@ variable "region" {
     type        = string
     default     = "eu-central-1"
 }
+
+variable "post_confirmation_lambda_arn" { 
+  description = "RegisterLambda ARN"
+  type = string
+}
