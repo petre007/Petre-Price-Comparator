@@ -1,3 +1,5 @@
+package com.register;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.CognitoUserPoolPostConfirmationEvent;
@@ -22,7 +24,6 @@ public class RegisterLambda implements RequestHandler<CognitoUserPoolPostConfirm
 
         PublishRequest publishRequest = new PublishRequest()
                 .withTopicArn(topicArn)
-                .withMessageGroupId("user-registration") // Required for FIFO
                 .withMessage(userInfo.toString());
 
         snsClient.publish(publishRequest);
