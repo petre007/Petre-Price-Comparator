@@ -35,7 +35,7 @@ module "ecs" {
   clusters = [
     {
       name  = "dpc-auth"
-      image = "123456789012.dkr.ecr.us-east-1.amazonaws.com/api:latest"
+      image = null
     },
   ]
 
