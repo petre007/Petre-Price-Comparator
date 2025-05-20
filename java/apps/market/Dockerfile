@@ -14,6 +14,7 @@ EXPOSE 80
 ENV DATASOURCE_URL=""
 ENV DB_USERNAME=""
 ENV DB_PASSWORD=""
+ENV API_KEY=""
 ENV PC_API_KEY=""
 
 # Run the Spring Boot app with injected environment variables
