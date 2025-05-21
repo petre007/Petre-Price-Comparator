@@ -10,14 +10,11 @@ COPY target/market-0.0.1-SNAPSHOT.jar app.jar
 # Expose the port the app will run on
 EXPOSE 80
 
-# Environment variables (can be overridden at runtime)
-ENV DATASOURCE_URL=""
-ENV DB_USERNAME=""
-ENV DB_PASSWORD=""
-ENV PC_API_KEY=""
-
 # Run the Spring Boot app with injected environment variables
 ENTRYPOINT ["sh", "-c", "java -jar app.jar \
   --spring.datasource.url=${DATASOURCE_URL} \
   --spring.datasource.username=${DB_USERNAME} \
-  --spring.datasource.password=${DB_PASSWORD}"]
+  --spring.datasource.password=${DB_PASSWORD} \
+  --security.pc-api-key=${PC_API_KEY} \
+  --pc-base-url=${PC_BASE_URL}"]
+

@@ -15,7 +15,8 @@ public class DiscountController {
     private final DiscountService discountService;
 
     @PostMapping("/discount")
-    public ResponseEntity<String> addDiscountToProduct(@RequestBody DiscountDTO discountDTO) {
+    public ResponseEntity<String> addDiscountToProduct(@RequestBody DiscountDTO discountDTO)
+            throws Exception {
         this.discountService.createDiscount(discountDTO);
         return ResponseEntity.ok("Successfully added");
     }
