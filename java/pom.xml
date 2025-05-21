@@ -13,6 +13,7 @@
     <modules>
         <module>shared/pc_client</module>
         <module>apps/market</module>
+        <module>apps/discounts</module>
     </modules>
 
 </project>

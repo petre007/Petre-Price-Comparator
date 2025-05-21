@@ -1,7 +1,7 @@
 # Variables - update if needed
 AWS_REGION := eu-central-1
 ECR_REPO_NAME := price-comparator-backend
-IMAGE_TAG := market-app
+IMAGE_TAG := discounts-app
 ECR_URI := 
 
 # Build the Spring Boot JAR and Docker image

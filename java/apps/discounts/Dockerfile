@@ -5,7 +5,7 @@ FROM amazoncorretto:21-alpine
 WORKDIR /app
 
 # Copy the Spring Boot fat JAR into the container
-COPY target/market-0.0.1-SNAPSHOT.jar app.jar
+COPY target/discounts-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port the app will run on
 EXPOSE 80
@@ -14,7 +14,6 @@ EXPOSE 80
 ENV DATASOURCE_URL=""
 ENV DB_USERNAME=""
 ENV DB_PASSWORD=""
-ENV API_KEY=""
 ENV PC_API_KEY=""
 
 # Run the Spring Boot app with injected environment variables

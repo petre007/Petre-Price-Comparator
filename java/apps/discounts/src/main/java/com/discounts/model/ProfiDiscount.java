@@ -1,4 +1,4 @@
-package com.market.model;
+package com.discounts.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "profi")
+@Table(name = "profi_discounts")
 @Getter
 @NoArgsConstructor
 @SuperBuilder
-public class ProfiShop extends ShopProduct {
+public class ProfiDiscount extends DiscountProduct{
 }
