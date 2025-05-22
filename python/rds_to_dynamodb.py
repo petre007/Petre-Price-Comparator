@@ -4,7 +4,7 @@ import base64
 import boto3
 from botocore.exceptions import ClientError
 from pyspark.context import SparkContext
-from pyspark.sql.functions import lit
+from pyspark.sql.functions import lit, col
 from awsglue.context import GlueContext
 from awsglue.utils import getResolvedOptions
 from awsglue.job import Job
@@ -19,7 +19,7 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 # --- Load RDS credentials from Secrets Manager ---
-def get_secret(secret_name, region_name="us-east-1"):
+def get_secret(secret_name, region_name="eu-central-1"):
     session = boto3.session.Session()
     client = session.client(service_name='secretsmanager', region_name=region_name)
 
@@ -37,10 +37,10 @@ def get_secret(secret_name, region_name="us-east-1"):
 secret = get_secret("rds-credentials")
 rds_user = secret["username"]
 rds_password = secret["password"]
-rds_dbname=secret["dbname"]
+rds_dbname = secret["dbname"]
 
 # --- Define RDS and DynamoDB settings ---
-jdbc_url = "jdbc:postgresql://pricecomparatordb.cp4oqwqw6yh7.eu-central-1.rds.amazonaws.com/" + dbname
+jdbc_url = "jdbc:postgresql://pricecomparatordb.cp4oqwqw6yh7.eu-central-1.rds.amazonaws.com/" + rds_dbname
 dynamodb_table = "PriceCatalogDynamoDb"
 
 # --- Load and tag data from a single RDS table ---
@@ -57,18 +57,22 @@ def load_table_with_shop(table_name, shop_name):
     return df.withColumn("shop", lit(shop_name))
 
 # --- Load all 3 source tables and append 'shop' field ---
-lidl_df = load_table_with_shop("lidl", "lidl")
-kaufland_df = load_table_with_shop("kaufland", "kaufland")
-profi_df = load_table_with_shop("profi", "profi")
+lidl_df = load_table_with_shop("lidl", "LIDL")
+kaufland_df = load_table_with_shop("kaufland", "KAUFLAND")
+profi_df = load_table_with_shop("profi", "PROFI")
 
 # --- Union all data ---
 combined_df = lidl_df.unionByName(kaufland_df).unionByName(profi_df)
+
+# --- Ensure primary key types match DynamoDB schema ---
+combined_df = combined_df.withColumn("product_id", col("product_id").cast("long"))
+combined_df = combined_df.withColumn("shop", col("shop").cast("string"))
 
 # --- Convert back to Glue DynamicFrame ---
 combined_dyf = DynamicFrame.fromDF(combined_df, glueContext, "combined_dyf")
 
 # --- Write to DynamoDB ---
-glueContext.write_dynamic_frame.from_options(
+glueContext.write_dynamic_frame_from_options(
     frame=combined_dyf,
     connection_type="dynamodb",
     connection_options={

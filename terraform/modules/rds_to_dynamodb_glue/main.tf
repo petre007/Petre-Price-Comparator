@@ -65,6 +65,7 @@ resource "aws_iam_role_policy" "glue_policy" {
         ],
         Resource = [
           "arn:aws:s3:::aws-glue-assets-160885268864-eu-central-1",
+          "arn:aws:s3:::aws-glue-assets-160885268864-eu-central-1/scripts",
           "arn:aws:s3:::aws-glue-assets-160885268864-eu-central-1/scripts/*"
         ]
       }
