@@ -101,3 +101,12 @@ module "dynamodb" {
     Project     = "FreeTierDynamo"
   }
 }
+
+module "glue_rds_to_dynamodb_migration_job" {
+  source = "./modules/rds_to_dynamodb_glue"
+
+  name              = "migrate-rds-to-dynamo"
+  script_location   = "s3://aws-glue-assets-160885268864-eu-central-1/scripts/"
+  dynamodb_table_arn = module.dynamodb.dynamodb_table_arn
+  secret_arn         = "arn:aws:secretsmanager:eu-central-1:160885268864:secret:rds-credentials-abbuDm"
+}
