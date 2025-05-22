@@ -28,10 +28,10 @@ public class MarketService {
     @Transactional
     public void addProductToShop(ShopDTO shopDTO) {
 
-        var product = this.pcClient.getProductById(shopDTO.product_id()).block();
+        Product product = this.pcClient.getProductById(shopDTO.productId()).block();
 
         if (product == null) {
-            log.error("No product with id {} in product_catalog", shopDTO.product_id());
+            log.error("No product with id {} in product_catalog", shopDTO.productId());
             return;
         }
 
