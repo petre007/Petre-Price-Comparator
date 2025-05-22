@@ -85,3 +85,19 @@ module "register_lambda" {
   user_pool_arn   = module.cognito.user_pool_arn
 }
 
+module "dynamodb" {
+  source         = "./modules/dynamodb"
+  table_name     = "PriceCatalogDynamoDb"
+  hash_key       = "product_id"
+  range_key      = "shop"
+
+  attributes = [
+    { name = "product_id", type = "N" },
+    { name = "shop", type = "S" },
+  ]
+
+  tags = {
+    Environment = "dev"
+    Project     = "FreeTierDynamo"
+  }
+}

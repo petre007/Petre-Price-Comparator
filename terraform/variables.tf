@@ -9,3 +9,4 @@ variable "jar_path" {
   description = "Path to the Lambda JAR file"
   default     = "../java/serverless/RegisterLambda/target/RegisterLambda-1.0-SNAPSHOT.jar"
 }
+
