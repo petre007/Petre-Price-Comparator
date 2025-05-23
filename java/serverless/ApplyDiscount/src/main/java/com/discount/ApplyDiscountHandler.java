@@ -4,10 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -41,19 +38,16 @@ public class ApplyDiscountHandler implements RequestHandler<Map<String, Object>,
             String discountExpiryDate = input.get("discount_expiry_date").toString();
             String discountApplyDate = input.get("discount_starting_date").toString();
 
-            // Construct key using product_id as Number
             Map<String, AttributeValue> key = Map.of(
                     "product_id", AttributeValue.fromN(productId.toString()),
                     "shop", AttributeValue.fromS(shop)
             );
 
-            // Check if item exists
-            GetItemRequest getRequest = GetItemRequest.builder()
+            // Retrieve item from DynamoDB
+            GetItemResponse getResponse = dynamoDb.getItem(GetItemRequest.builder()
                     .tableName(TABLE_NAME)
                     .key(key)
-                    .build();
-
-            GetItemResponse getResponse = dynamoDb.getItem(getRequest);
+                    .build());
 
             if (!getResponse.hasItem()) {
                 response.put("statusCode", 404);
@@ -61,12 +55,26 @@ public class ApplyDiscountHandler implements RequestHandler<Map<String, Object>,
                 return response;
             }
 
-            // Update the item
+            Map<String, AttributeValue> item = getResponse.item();
+
+            if (!item.containsKey("price")) {
+                response.put("statusCode", 422);
+                response.put("body", "Product found but missing 'price' field.");
+                return response;
+            }
+
+            // Calculate discounted price and overwrite `price`
+            double originalPrice = Double.parseDouble(item.get("price").n());
+            double discountedPrice = originalPrice * (1 - discountPercentage / 100.0);
+
             UpdateItemRequest updateRequest = UpdateItemRequest.builder()
                     .tableName(TABLE_NAME)
                     .key(key)
-                    .updateExpression("SET discount_percentage = :dp, discount_expiry_date = :de, discount_starting_date = :ds, discount_added_date = :da")
+                    .updateExpression("SET price = :newPrice, discount_percentage = :dp, " +
+                            "discount_expiry_date = :de, discount_starting_date = :ds, " +
+                            "discount_added_date = :da")
                     .expressionAttributeValues(Map.of(
+                            ":newPrice", AttributeValue.fromN(String.format("%.2f", discountedPrice)),
                             ":dp", AttributeValue.fromN(discountPercentage.toString()),
                             ":de", AttributeValue.fromS(discountExpiryDate),
                             ":ds", AttributeValue.fromS(discountApplyDate),
@@ -77,7 +85,7 @@ public class ApplyDiscountHandler implements RequestHandler<Map<String, Object>,
             dynamoDb.updateItem(updateRequest);
 
             response.put("statusCode", 200);
-            response.put("body", "Discount fields updated successfully.");
+            response.put("body", String.format("Price updated from %.2f to %.2f", originalPrice, discountedPrice));
             return response;
 
         } catch (Exception e) {
