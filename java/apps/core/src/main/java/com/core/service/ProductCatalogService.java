@@ -15,12 +15,16 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -98,6 +102,24 @@ public class ProductCatalogService {
                     return p;
                 })
                 .min(Comparator.comparingDouble(ProductModel::getPrice));
+    }
+
+    public List<ProductModel> getRecentlyDiscountedProducts() {
+        Instant cutoff = Instant.now().minus(Duration.ofHours(24)).truncatedTo(ChronoUnit.MILLIS);
+
+        Expression filter = Expression.builder()
+                .expression("discount_added_date >= :cutoff")
+                .expressionValues(Map.of(":cutoff", AttributeValue.fromS(cutoff.toString())))
+                .build();
+
+        ScanEnhancedRequest request = ScanEnhancedRequest.builder()
+                .filterExpression(filter)
+                .build();
+
+        return table.scan(request)
+                .stream()
+                .flatMap(p -> p.items().stream())
+                .collect(Collectors.toList());
     }
 
 }

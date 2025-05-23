@@ -9,6 +9,8 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,11 +65,12 @@ public class ApplyDiscountHandler implements RequestHandler<Map<String, Object>,
             UpdateItemRequest updateRequest = UpdateItemRequest.builder()
                     .tableName(TABLE_NAME)
                     .key(key)
-                    .updateExpression("SET discount_percentage = :dp, discount_expiry_date = :de, discount_starting_date = :ds")
+                    .updateExpression("SET discount_percentage = :dp, discount_expiry_date = :de, discount_starting_date = :ds, discount_added_date = :da")
                     .expressionAttributeValues(Map.of(
                             ":dp", AttributeValue.fromN(discountPercentage.toString()),
                             ":de", AttributeValue.fromS(discountExpiryDate),
-                            ":ds", AttributeValue.fromS(discountApplyDate)
+                            ":ds", AttributeValue.fromS(discountApplyDate),
+                            ":da", AttributeValue.fromS(Instant.now().truncatedTo(ChronoUnit.MILLIS).toString())
                     ))
                     .build();
 

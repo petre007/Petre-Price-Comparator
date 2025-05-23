@@ -19,6 +19,7 @@ public class ProductModel {
     private Double discountPercentage;
     private String discountExpiryDate;
     private String discountApplyDate;
+    private String discountAddedDate;
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("product_id")
@@ -128,4 +129,14 @@ public class ProductModel {
     public void setDiscountApplyDate(String discountApplyDate) {
         this.discountApplyDate = discountApplyDate;
     }
+
+    @DynamoDbAttribute("discount_added_date")
+    public String getDiscountAddedDate() {
+        return discountAddedDate;
+    }
+
+    public void setDiscountAddedDate(String discountAddedDate) {
+        this.discountAddedDate = discountAddedDate;
+    }
+
 }

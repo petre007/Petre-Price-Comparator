@@ -1,6 +1,7 @@
 package com.core.controller;
 
 import com.core.dto.ProductPageResponse;
+import com.core.model.ProductModel;
 import com.core.service.ProductCatalogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -44,4 +46,8 @@ public class ProductCatalogController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(value = "/latest_discounts")
+    public ResponseEntity<List<ProductModel>> getLatestDiscounts() {
+        return ResponseEntity.ok(this.productCatalogService.getRecentlyDiscountedProducts());
+    }
 }
