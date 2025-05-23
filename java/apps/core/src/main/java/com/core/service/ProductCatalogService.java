@@ -83,4 +83,21 @@ public class ProductCatalogService {
         return new ProductPageResponse(springPage, awsPage.lastEvaluatedKey());
     }
 
+
+    public Optional<ProductModel> findLowestPricedProduct(Long productId) {
+        Key key = Key.builder().partitionValue(productId).build();
+
+        return table.query(r -> r.queryConditional(QueryConditional.keyEqualTo(key)))
+                .stream()
+                .flatMap(p -> p.items().stream())
+                .filter(p -> p.getPrice() != null)
+                .map(p -> {
+                    double discount = Optional.ofNullable(p.getDiscountPercentage()).orElse(0.0);
+                    double effectivePrice = p.getPrice() * (1 - discount / 100);
+                    p.setPrice(effectivePrice); // Optionally override for clarity
+                    return p;
+                })
+                .min(Comparator.comparingDouble(ProductModel::getPrice));
+    }
+
 }
