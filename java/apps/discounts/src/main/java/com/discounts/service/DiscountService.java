@@ -79,7 +79,7 @@ public class DiscountService {
 
         log.info("Product stored in {} with product_id {}", discountDTO.shop(), response.getProductId());
 
-        String lambdaResponse = this.lambdaService.invokeUpdateDiscountLambda(ApplyDiscountDTO.builder()
+        String lambdaResponse = this.lambdaService.invokeApplyDiscountLambda(ApplyDiscountDTO.builder()
                 .productId(response.getProductId())
                 .shop(discountDTO.shop())
                 .discountPercentage(response.getDiscountPercentage())

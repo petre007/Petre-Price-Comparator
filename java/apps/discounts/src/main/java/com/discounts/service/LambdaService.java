@@ -21,7 +21,7 @@ public class LambdaService {
     private final LambdaClient lambdaClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String invokeUpdateDiscountLambda(ApplyDiscountDTO applyDiscountDTO)
+    public String invokeApplyDiscountLambda(ApplyDiscountDTO applyDiscountDTO)
             throws Exception {
         Map<String, Object> payload = new HashMap<>();
         payload.put("product_id", applyDiscountDTO.getProductId());
