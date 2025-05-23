@@ -12,8 +12,6 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-;
-
 public class ApplyDiscountHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
     private final DynamoDbClient dynamoDb = DynamoDbClient.builder()
@@ -28,7 +26,8 @@ public class ApplyDiscountHandler implements RequestHandler<Map<String, Object>,
 
         try {
             if (!input.containsKey("product_id") || !input.containsKey("shop") ||
-                    !input.containsKey("discount_percentage") || !input.containsKey("discount_expiry_date")) {
+                    !input.containsKey("discount_percentage") || !input.containsKey("discount_expiry_date") ||
+                    !input.containsKey("discount_starting_date")) {
                 response.put("statusCode", 400);
                 response.put("body", "Missing required fields.");
                 return response;
@@ -38,6 +37,7 @@ public class ApplyDiscountHandler implements RequestHandler<Map<String, Object>,
             String shop = input.get("shop").toString();
             Double discountPercentage = Double.parseDouble(input.get("discount_percentage").toString());
             String discountExpiryDate = input.get("discount_expiry_date").toString();
+            String discountApplyDate = input.get("discount_starting_date").toString();
 
             // Construct key using product_id as Number
             Map<String, AttributeValue> key = Map.of(
@@ -63,10 +63,11 @@ public class ApplyDiscountHandler implements RequestHandler<Map<String, Object>,
             UpdateItemRequest updateRequest = UpdateItemRequest.builder()
                     .tableName(TABLE_NAME)
                     .key(key)
-                    .updateExpression("SET discount_percentage = :dp, discount_expiry_date = :de")
+                    .updateExpression("SET discount_percentage = :dp, discount_expiry_date = :de, discount_starting_date = :ds")
                     .expressionAttributeValues(Map.of(
                             ":dp", AttributeValue.fromN(discountPercentage.toString()),
-                            ":de", AttributeValue.fromS(discountExpiryDate)
+                            ":de", AttributeValue.fromS(discountExpiryDate),
+                            ":ds", AttributeValue.fromS(discountApplyDate)
                     ))
                     .build();
 

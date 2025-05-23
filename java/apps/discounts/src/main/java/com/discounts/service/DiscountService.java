@@ -9,7 +9,6 @@ import com.discounts.model.ProfiDiscount;
 import com.discounts.repository.KauflandDiscountRepository;
 import com.discounts.repository.LidlDiscountRepository;
 import com.discounts.repository.ProfiDiscountRepository;
-import com.discounts.utils.DiscountUtils;
 import com.pc_client.impl.PcClientImpl;
 import com.pc_client.model.Product;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -84,6 +82,7 @@ public class DiscountService {
                 .shop(discountDTO.shop())
                 .discountPercentage(response.getDiscountPercentage())
                 .expiryDate(response.getToDate().toString())
+                .applyDate(response.getFromDate().toString())
                 .build());
 
         log.info("Lambda response: {}", lambdaResponse);

@@ -13,4 +13,5 @@ public class ApplyDiscountDTO {
     private Shops shop;
     private Double discountPercentage;
     private String expiryDate;
+    private String applyDate;
 }

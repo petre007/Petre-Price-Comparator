@@ -26,6 +26,7 @@ public class LambdaService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("product_id", applyDiscountDTO.getProductId());
         payload.put("shop", applyDiscountDTO.getShop());
+        payload.put("discount_starting_date", applyDiscountDTO.getApplyDate());
         payload.put("discount_percentage", applyDiscountDTO.getDiscountPercentage());
         payload.put("discount_expiry_date", applyDiscountDTO.getExpiryDate());
 
