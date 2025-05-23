@@ -1,5 +1,6 @@
 package com.discounts.service;
 
+import com.discounts.dto.ApplyDiscountDTO;
 import com.discounts.dto.DiscountDTO;
 import com.discounts.model.DiscountProduct;
 import com.discounts.model.KauflandDiscount;
@@ -28,14 +29,11 @@ public class DiscountService {
     private final KauflandDiscountRepository kauflandDiscountRepository;
     private final ProfiDiscountRepository profiDiscountRepository;
     private final PcClientImpl pcClient;
+    private final LambdaService lambdaService;
 
     @Transactional
     public void createDiscount(DiscountDTO discountDTO)
             throws Exception {
-
-        if (DiscountUtils.isValidDateRange(LocalDateTime.parse(discountDTO.fromDate()), LocalDateTime.parse(discountDTO.toDate()))) {
-            throw new Exception("Invalid discounts date time introduced");
-        }
 
         Product product = this.pcClient.getProductById(discountDTO.productId()).block();
 
@@ -81,7 +79,14 @@ public class DiscountService {
 
         log.info("Product stored in {} with product_id {}", discountDTO.shop(), response.getProductId());
 
-        // TODO send response to ApplyLambda
+        String lambdaResponse = this.lambdaService.invokeUpdateDiscountLambda(ApplyDiscountDTO.builder()
+                .productId(response.getProductId())
+                .shop(discountDTO.shop())
+                .discountPercentage(response.getDiscountPercentage())
+                .expiryDate(response.getToDate().toString())
+                .build());
+
+        log.info("Lambda response: {}", lambdaResponse);
     }
 
 }

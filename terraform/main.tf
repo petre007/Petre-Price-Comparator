@@ -110,3 +110,18 @@ module "glue_rds_to_dynamodb_migration_job" {
   dynamodb_table_arn = module.dynamodb.dynamodb_table_arn
   secret_arn         = "arn:aws:secretsmanager:eu-central-1:160885268864:secret:rds-credentials-abbuDm"
 }
+
+module "redis" {
+  source            = "./modules/redis"
+  name              = "redis-price-comparator"
+  subnet_ids        = ["subnet-0e081079b1591d50f", "subnet-0d451fa3dcf350ae9", "subnet-057244abd18335e11"]
+  security_group_ids = ["sg-0569935f80ebd47ee"]
+}
+
+module "update_discount_lambda" {
+  source           = "./modules/apply_discount_lambda"
+  lambda_name      = "ApplyDiscount"
+  lambda_handler   = "com.discount.ApplyDiscountHandler::handleRequest"
+  lambda_jar_path  = "../java/serverless/ApplyDiscount/target/ApplyDiscount-1.0-SNAPSHOT.jar"
+  dynamodb_table_arn = module.dynamodb.dynamodb_table_arn
+}
