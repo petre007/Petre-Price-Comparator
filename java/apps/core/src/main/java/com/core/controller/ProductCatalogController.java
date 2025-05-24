@@ -6,6 +6,7 @@ import com.core.service.ProductCatalogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -49,5 +50,10 @@ public class ProductCatalogController {
     @GetMapping(value = "/latest_discounts")
     public ResponseEntity<List<ProductModel>> getLatestDiscounts() {
         return ResponseEntity.ok(this.productCatalogService.getRecentlyDiscountedProducts());
+    }
+
+    @GetMapping(value = "/best_discounts/{limit}")
+    public ResponseEntity<List<ProductModel>> getBestDiscounts(@PathVariable int limit) {
+        return ResponseEntity.ok(this.productCatalogService.getTopDiscountedProducts(limit));
     }
 }

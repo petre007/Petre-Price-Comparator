@@ -122,4 +122,24 @@ public class ProductCatalogService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductModel> getTopDiscountedProducts(int limit) {
+        Expression filter = Expression.builder()
+                .expression("discount_percentage <> :null")
+                .expressionValues(Map.of(":null", AttributeValue.fromN("0")))
+                .build();
+
+        ScanEnhancedRequest request = ScanEnhancedRequest.builder()
+                .filterExpression(filter)
+                .build();
+
+        return table.scan(request)
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .filter(p -> p.getDiscountPercentage() != null)
+                .sorted(Comparator.comparing(ProductModel::getDiscountPercentage).reversed())
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+
 }
