@@ -21,6 +21,7 @@ public class RegisterLambda implements RequestHandler<CognitoUserPoolPostConfirm
         userInfo.put("username", event.getUserName());
         userInfo.put("email", event.getRequest().getUserAttributes().get("email"));
         userInfo.put("name", event.getRequest().getUserAttributes().get("name"));
+        userInfo.put("phone_number", event.getRequest().getUserAttributes().get("phone_number"));
 
         PublishRequest publishRequest = new PublishRequest()
                 .withTopicArn(topicArn)

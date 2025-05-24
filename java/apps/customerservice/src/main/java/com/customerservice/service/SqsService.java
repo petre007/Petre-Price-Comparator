@@ -36,6 +36,7 @@ public class SqsService {
         Customer newCustomer = Customer.builder()
                 .name(jsonNode.get("name").asText())
                 .email(jsonNode.get("email").asText())
+                .phoneNumber(jsonNode.get("phone_number").asText())
                 .username(username)
                 .build();
 
