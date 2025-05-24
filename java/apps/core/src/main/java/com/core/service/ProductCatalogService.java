@@ -71,7 +71,7 @@ public class ProductCatalogService {
 
         ScanEnhancedRequest.Builder requestBuilder = ScanEnhancedRequest.builder().limit(pageSize);
         if (filterExpression != null) requestBuilder.filterExpression(filterExpression);
-        lastKey.ifPresent(k -> requestBuilder.exclusiveStartKey(Map.of("productId", AttributeValue.fromS(k))));
+        lastKey.ifPresent(k -> requestBuilder.exclusiveStartKey(Map.of("product_id", AttributeValue.fromN(k)))); // use product_id not productId
 
         PageIterable<ProductModel> pages = table.scan(requestBuilder.build());
         software.amazon.awssdk.enhanced.dynamodb.model.Page<ProductModel> awsPage =
@@ -82,10 +82,14 @@ public class ProductCatalogService {
         }
 
         List<ProductModel> items = awsPage.items();
-        Page<ProductModel> springPage = new PageImpl<>(items, PageRequest.of(0, pageSize), items.size());
 
+        // ✅ Enrich each product with valuePerUnit
+        items.forEach(this::computeAndSetValuePerUnit);
+
+        Page<ProductModel> springPage = new PageImpl<>(items, PageRequest.of(0, pageSize), items.size());
         return new ProductPageResponse(springPage, awsPage.lastEvaluatedKey());
     }
+
 
 
     public Optional<ProductModel> findLowestPricedProduct(Long productId) {
@@ -103,6 +107,38 @@ public class ProductCatalogService {
                 })
                 .min(Comparator.comparingDouble(ProductModel::getPrice));
     }
+
+    private void computeAndSetValuePerUnit(ProductModel product) {
+        if (product.getPrice() == null || product.getPackageQuantity() == null || product.getPackageUnit() == null) {
+            product.setValuePerUnit(null);
+            return;
+        }
+
+        double quantity;
+        try {
+            quantity = Double.parseDouble(product.getPackageQuantity().toString());
+        } catch (NumberFormatException e) {
+            product.setValuePerUnit(null);
+            return;
+        }
+
+        switch (product.getPackageUnit().toLowerCase()) {
+            case "g": quantity /= 1000.0; break;
+            case "ml": quantity /= 1000.0; break;
+            case "kg":
+            case "l": break;
+            default:
+                product.setValuePerUnit(null);
+                return;
+        }
+
+        if (quantity > 0) {
+            product.setValuePerUnit(product.getPrice() / quantity);
+        } else {
+            product.setValuePerUnit(null);
+        }
+    }
+
 
     public List<ProductModel> getRecentlyDiscountedProducts() {
         Instant cutoff = Instant.now().minus(Duration.ofHours(24)).truncatedTo(ChronoUnit.MILLIS);

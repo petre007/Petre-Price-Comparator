@@ -2,6 +2,7 @@ package com.core.model;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
 
@@ -11,7 +12,7 @@ public class ProductModel {
     private String shop;
     private String brand;
     private String currency;
-    private Integer packageQuantity;
+    private String packageQuantity;
     private String packageUnit;
     private Double price;
     private String productCategory;
@@ -20,6 +21,7 @@ public class ProductModel {
     private String discountExpiryDate;
     private String discountApplyDate;
     private String discountAddedDate;
+    private transient Double valuePerUnit;
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("product_id")
@@ -59,11 +61,11 @@ public class ProductModel {
     }
 
     @DynamoDbAttribute("package_quantity")
-    public Integer getPackageQuantity() {
+    public String getPackageQuantity() {
         return packageQuantity;
     }
 
-    public void setPackageQuantity(Integer packageQuantity) {
+    public void setPackageQuantity(String packageQuantity) {
         this.packageQuantity = packageQuantity;
     }
 
@@ -137,6 +139,15 @@ public class ProductModel {
 
     public void setDiscountAddedDate(String discountAddedDate) {
         this.discountAddedDate = discountAddedDate;
+    }
+
+    @DynamoDbIgnore
+    public Double getValuePerUnit() {
+        return valuePerUnit;
+    }
+
+    public void setValuePerUnit(Double valuePerUnit) {
+        this.valuePerUnit = valuePerUnit;
     }
 
 }
