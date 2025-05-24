@@ -125,3 +125,9 @@ module "update_discount_lambda" {
   lambda_jar_path  = "../java/serverless/ApplyDiscount/target/ApplyDiscount-1.0-SNAPSHOT.jar"
   dynamodb_table_arn = module.dynamodb.dynamodb_table_arn
 }
+
+module "discount_cronjob" {
+  source             = "./modules/discount_cronjob"
+  dynamodb_table_arn = module.dynamodb.dynamodb_table_arn
+  lambda_zip_path    = "../java/serverless/DiscountCronjob/target/DiscountCronjob-1.0-SNAPSHOT.jar"
+}
