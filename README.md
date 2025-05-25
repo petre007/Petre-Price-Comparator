@@ -24,7 +24,7 @@ This project is a cloud-native backend system designed to:
 - **Amazon RDS** – Stores structured data (e.g., shop, customer, discount tables).
 - **Amazon DynamoDB** – Stores fast-access customer and product information.
 - **Amazon S3** – Stores visualized product data.
-- **Amazon SQS & SNS** – Queueing and sending customer notifications.
+- **Amazon SQS & SNS** – Managing asynchronous communication.
 - **Amazon EventBridge** – Triggers data collection and discount evaluation.
 - **AWS Glue** – ETL job for moving data from RDS to DynamoDB and from DynamoDb to S3.
 - **Amazon Athena** – Queries and visualizes product price evolution.
@@ -33,7 +33,7 @@ This project is a cloud-native backend system designed to:
 
 - **Register Service**
   - Handles customer registration.
-  - Uses Cognito and Lambda, communicates via `register_sqs` and `register_sns`.
+  - Uses Cognito and RegisterLambda, `register_sqs` SQS and `register_sns` SNS topic.
 
 - **Customer Service**
   - Stores new customer data in RDS.
@@ -51,7 +51,7 @@ This project is a cloud-native backend system designed to:
   - Data is stored daily into S3 for long-term analysis.
 
 - **Notifications**
-  - If a customer's discount target is reached, a notification is sent via SNS.
+  - If a customer's discount target is reached, a notification is sent via SMS using SNS.
 
 ## 🧑‍💻 Getting Started
 
