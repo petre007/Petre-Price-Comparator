@@ -63,7 +63,7 @@ module "s3" {
   enable_sse         = true
   tags = {
     Environment = "dev"
-    Owner       = "your-name"
+    Owner       = "petre"
   }
 }
 
@@ -98,7 +98,7 @@ module "dynamodb" {
 
   tags = {
     Environment = "dev"
-    Project     = "FreeTierDynamo"
+    Project     = "Price-Comparator"
   }
 }
 
@@ -159,7 +159,7 @@ module "dynamodb_customers" {
 
   tags = {
     Environment = "dev"
-    Project     = "FreeTierDynamo"
+    Project     = "Price-Comparator"
   }
 }
 
@@ -172,4 +172,10 @@ module "notification_service" {
   product_catalog_table_name = "ProductCatalogDynamoDb"
   customers_table_name       = "CustomersDynamoDb"
   stream_arn = module.dynamodb.dynamodb_stream_arn
+}
+
+module "dynamodb_to_s3" {
+  source             = "./modules/dynamodb_to_s3"
+  dynamodb_table_arn = module.dynamodb.dynamodb_table_arn
+  s3_bucket_arn      = module.s3.bucket_arn
 }

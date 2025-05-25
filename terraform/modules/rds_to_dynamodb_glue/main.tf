@@ -79,7 +79,7 @@ resource "aws_glue_job" "this" {
 
   command {
     name            = "glueetl"
-    script_location = var.script_location  # still required to point to script, but can be local file during dev/test
+    script_location = var.script_location
     python_version  = "3"
   }
 
