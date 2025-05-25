@@ -1,6 +1,6 @@
 # 🛒 Petre Price Comparator
 
-Welcome to the **Petre Price Comparator** — a scalable, event-driven price comparison platform built on AWS microservices architecture. This solution leverages multiple AWS services to compare product prices, apply discounts, notify users, and track price evolution over time.
+Welcome to the **Petre Price Comparator** — a scalable, event-driven price comparison platform built on AWS microservices architecture. This solution leverages multiple AWS services to compare product prices, apply discounts, notify users and track price evolution over time.
 
 ![Architecture Diagram](./Price_comparator_backend.png)
 
