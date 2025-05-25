@@ -33,3 +33,15 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "global_secondary_indexes" {
+  type = list(object({
+    name               = string
+    hash_key           = string
+    range_key          = optional(string)
+    projection_type    = string
+    write_capacity     = optional(number)
+    read_capacity      = optional(number)
+  }))
+  default = []
+}

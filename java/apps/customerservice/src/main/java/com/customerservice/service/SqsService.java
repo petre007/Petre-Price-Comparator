@@ -1,5 +1,6 @@
 package com.customerservice.service;
 
+import com.customerservice.dto.CustomerSnsDto;
 import com.customerservice.model.Customer;
 import com.customerservice.repository.CustomerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class SqsService {
 
     private final CustomerRepository customerRepository;
+    private final SnsService snsService;
 
     @Transactional
     public void processMessage(String message) throws JsonProcessingException {
@@ -42,6 +44,12 @@ public class SqsService {
 
         Customer savedCustomer = customerRepository.save(newCustomer);
         log.info("Customer stored with customer_id {}", savedCustomer.getId());
+
+        CustomerSnsDto customerSnsDto = new CustomerSnsDto(newCustomer.getId(), newCustomer.getPhoneNumber());
+        String customerSnsDtoJSON = objectMapper.writeValueAsString(customerSnsDto);
+
+        snsService.publishCustomerEvent(customerSnsDtoJSON, "customer_group");
+
 
     }
 

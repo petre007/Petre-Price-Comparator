@@ -131,3 +131,45 @@ module "discount_cronjob" {
   dynamodb_table_arn = module.dynamodb.dynamodb_table_arn
   lambda_zip_path    = "../java/serverless/DiscountCronjob/target/DiscountCronjob-1.0-SNAPSHOT.jar"
 }
+
+module "customers_sns_sqs_fifo" {
+  source = "./modules/sns_sqs_fifo"
+
+  name = "customers"
+}
+
+module "dynamodb_customers" {
+  source         = "./modules/dynamodb"
+  table_name     = "CustomersDynamoDb"
+  hash_key       = "customer_id"
+  range_key      = "product_id"
+
+  attributes = [
+    { name = "customer_id", type = "N" },
+    { name = "product_id", type = "N" },
+  ]
+
+  global_secondary_indexes = [
+    {
+      name            = "product_id-index"
+      hash_key        = "product_id"
+      projection_type = "ALL"
+    }
+  ]
+
+  tags = {
+    Environment = "dev"
+    Project     = "FreeTierDynamo"
+  }
+}
+
+module "notification_service" {
+  source = "./modules/notification_service"
+
+  lambda_function_name       = "NotificationService"
+  lambda_handler             = "com.notificationservice.NotificationHandler"
+  lambda_jar_path            = "../java/serverless/NotificationService/target/notification-service-1.0.jar"
+  product_catalog_table_name = "ProductCatalogDynamoDb"
+  customers_table_name       = "CustomersDynamoDb"
+  stream_arn = module.dynamodb.dynamodb_stream_arn
+}
